@@ -1,0 +1,27 @@
+# UI自动化测试框架 - Python依赖清单
+# 安装方式：pip install -r requirements.txt
+
+# 测试框架核心
+pytest==7.4.0
+pytest-xdist==3.3.0
+pytest-rerunfailures==12.0
+pytest-base-url==2.0.0
+pytest-playwright==0.4.0
+pytest-order==1.2.0
+
+# 浏览器自动化引擎
+playwright==1.38.0
+
+# 配置管理
+pydantic==2.4.0
+pydantic-settings>=2.0.0
+python-dotenv==1.0.0
+
+# 测试报告
+allure-pytest==2.13.2
+
+# 数据处理
+PyYAML>=6.0
+
+# 辅助工具
+Faker>=20.0.0

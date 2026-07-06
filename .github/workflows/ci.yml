@@ -1,0 +1,71 @@
+name: UI Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        browser: [chromium]
+        env: [test]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Install Playwright browsers
+        run: playwright install --with-deps ${{ matrix.browser }}
+
+      - name: Create .env from example
+        run: cp .env.example .env
+
+      - name: Run tests
+        env:
+          ENV: ${{ matrix.env }}
+          HEADLESS: 'true'
+        run: |
+          pytest \
+            --browser=${{ matrix.browser }} \
+            --headless \
+            --alluredir=reports/allure-results \
+            -n auto --dist=loadscope
+
+      - name: Generate Allure Report
+        if: always()
+        run: |
+          npm install -g allure-commandline
+          allure generate reports/allure-results -o reports/allure-report --clean
+
+      - name: Upload Allure Report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: allure-report-${{ matrix.browser }}-${{ matrix.env }}
+          path: reports/allure-report
+
+      - name: Upload screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: failure-screenshots-${{ matrix.browser }}
+          path: reports/screenshots/
+
+      - name: Upload traces on failure
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: traces-${{ matrix.browser }}
+          path: reports/traces/

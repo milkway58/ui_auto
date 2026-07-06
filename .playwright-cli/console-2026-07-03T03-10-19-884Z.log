@@ -1,0 +1,8 @@
+[    1514ms] [LOG] 请求环境：test @ https://zjtest.gyuncai.com/mall-view-static/js/app.70636e0f05b37c9f616b.js:8
+[    1573ms] [WARNING] [vue-router] Duplicate named routes definition: { name: "newslist", path: "/mall/view/index/newsDetail" } @ https://zjtest.gyuncai.com/mall-view-static/js/vendor.7eceb8afbb50fbfbd351.js:22
+[    1573ms] [WARNING] [vue-router] Duplicate named routes definition: { name: "intelligentSelection", path: "/mall/view/znyj/index/intelligentSelection" } @ https://zjtest.gyuncai.com/mall-view-static/js/vendor.7eceb8afbb50fbfbd351.js:22
+[    1573ms] [WARNING] [vue-router] Duplicate named routes definition: { name: "quoteMallQuotationDetail", path: "/mall/view/znyj/order/mallQuotationDetail/c4" } @ https://zjtest.gyuncai.com/mall-view-static/js/vendor.7eceb8afbb50fbfbd351.js:22
+[    1573ms] [WARNING] [vue-router] Duplicate named routes definition: { name: "quoteMallQuotationDetail", path: "/mall/view/znyj/order/mallQuotationDetail/oaMobile" } @ https://zjtest.gyuncai.com/mall-view-static/js/vendor.7eceb8afbb50fbfbd351.js:22
+[    1573ms] [WARNING] [vue-router] Duplicate named routes definition: { name: "materialTakedownNotice", path: "/mall/view/materialTakedownNotice" } @ https://zjtest.gyuncai.com/mall-view-static/js/vendor.7eceb8afbb50fbfbd351.js:22
+[    1573ms] [WARNING] [vue-router] Duplicate named routes definition: { name: "register", path: "/mall/view/register" } @ https://zjtest.gyuncai.com/mall-view-static/js/vendor.7eceb8afbb50fbfbd351.js:22
+[    1938ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ https://zjtest.gyuncai.com/mall/view/login:0

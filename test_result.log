@@ -1,0 +1,164 @@
+============================= test session starts =============================
+platform win32 -- Python 3.10.11, pytest-7.4.0, pluggy-1.6.0 -- C:\Users\wangt-aw\AppData\Local\Programs\Python\Python310\python.exe
+cachedir: .pytest_cache
+rootdir: f:\UI_AUTO
+configfile: pytest.ini
+plugins: allure-pytest-2.13.2, anyio-4.12.1, Faker-40.11.0, base-url-2.0.0, forked-1.6.0, ordering-0.6, playwright-0.4.0, rerunfailures-12.0, xdist-3.3.0
+collecting ... collected 1 item
+
+tests/test_sales_order_flow.py::TestSalesOrderFlow::test_sales_full_order_flow[chromium] 2026-07-06 09:11:46 | INFO     | UI.conftest | conftest.py:60 | ============================================================
+
+------------------------------- live log setup --------------------------------
+2026-07-06 09:11:46 [INFO] UI.conftest: ============================================================
+2026-07-06 09:11:46 | INFO     | UI.conftest | conftest.py:61 | 测试环境: test
+2026-07-06 09:11:46 [INFO] UI.conftest: 测试环境: test
+2026-07-06 09:11:46 | INFO     | UI.conftest | conftest.py:62 | 基础URL: https://zjtest.gyuncai.com
+2026-07-06 09:11:46 [INFO] UI.conftest: 基础URL: https://zjtest.gyuncai.com
+2026-07-06 09:11:46 | INFO     | UI.conftest | conftest.py:63 | 浏览器: chrome (headless=False)
+2026-07-06 09:11:46 [INFO] UI.conftest: 浏览器: chrome (headless=False)
+2026-07-06 09:11:46 | INFO     | UI.conftest | conftest.py:64 | 视口: 1920x1080
+2026-07-06 09:11:46 [INFO] UI.conftest: 视口: 1920x1080
+2026-07-06 09:11:46 | INFO     | UI.conftest | conftest.py:65 | 超时: 30000ms | 重试: 2次
+2026-07-06 09:11:46 [INFO] UI.conftest: 超时: 30000ms | 重试: 2次
+2026-07-06 09:11:46 | INFO     | UI.conftest | conftest.py:66 | ============================================================
+2026-07-06 09:11:46 [INFO] UI.conftest: ============================================================
+[INFO] 使用 Chrome 浏览器: C:\Program Files\Google\Chrome\Application\chrome.exe
+2026-07-06 09:11:47 | INFO     | UI.tests.test_sales_order_flow | test_sales_order_flow.py:59 | ==================================================
+-------------------------------- live log call --------------------------------
+2026-07-06 09:11:47 [INFO] UI.tests.test_sales_order_flow: ==================================================
+2026-07-06 09:11:47 | INFO     | UI.tests.test_sales_order_flow | test_sales_order_flow.py:60 | 销售完整下单流程测试 - 开始
+2026-07-06 09:11:47 [INFO] UI.tests.test_sales_order_flow: 销售完整下单流程测试 - 开始
+2026-07-06 09:11:47 | INFO     | UI.tests.test_sales_order_flow | test_sales_order_flow.py:61 | ==================================================
+2026-07-06 09:11:47 [INFO] UI.tests.test_sales_order_flow: ==================================================
+2026-07-06 09:11:47 | INFO     | UI.tests.test_sales_order_flow | test_sales_order_flow.py:64 | --- Phase 1: 销售登录 ---
+2026-07-06 09:11:47 [INFO] UI.tests.test_sales_order_flow: --- Phase 1: 销售登录 ---
+2026-07-06 09:11:47 | INFO     | UI.pages.sales_login_page | sales_login_page.py:74 | 打开销售登录页
+2026-07-06 09:11:47 [INFO] UI.pages.sales_login_page: 打开销售登录页
+2026-07-06 09:11:47 | INFO     | UI.pages.base_page | base_page.py:152 | 导航至: https://zjtest.gyuncai.com/mall/view/buyerLogin
+2026-07-06 09:11:47 [INFO] UI.pages.base_page: 导航至: https://zjtest.gyuncai.com/mall/view/buyerLogin
+2026-07-06 09:12:14 | ERROR    | UI.conftest | conftest.py:91 | 测试失败: test_sales_full_order_flow[chromium] | tests\test_sales_order_flow.py:66: in test_sales_full_order_flow
+    login_page.open().sales_login(
+pages\sales_login_page.py:75: in open
+    self.navigate(self._url or self.SALES_URL)
+pages\base_page.py:153: in navigate
+    self.page.goto(url, wait_until="domcontentloaded",
+C:\Users\wangt-aw\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\sync_api\_generated.py:9303: in goto
+    self._sync(
+C:\Users\wangt-aw\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_page.py:473: in goto
+    return await self._main_frame.goto(**locals_to_params(locals()))
+C:\Users\wangt-aw\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_frame.py:138: in goto
+    await self._channel.send("goto", locals_to_params(locals()))
+C:\Users\wangt-aw\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_connection.py:61: in send
+    return await self._connection.wrap_api_call(
+C:\Users\wangt-aw\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_connection.py:482: in wrap_api_call
+    return await cb()
+C:\Users\wangt-aw\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_connection.py:97: in inner_send
+    result = next(iter(done)).result()
+E   playwright._impl._api_types.Error: Page closed
+E   =========================== logs ===========================
+E   navigating to "https://zjtest.gyuncai.com/mall/view/buyerLogin", waiting until "domcontentloaded"
+E   ============================================================
+2026-07-06 09:12:14 [ERROR] UI.conftest: 测试失败: test_sales_full_order_flow[chromium] | tests\test_sales_order_flow.py:66: in test_sales_full_order_flow
+    login_page.open().sales_login(
+pages\sales_login_page.py:75: in open
+    self.navigate(self._url or self.SALES_URL)
+pages\base_page.py:153: in navigate
+    self.page.goto(url, wait_until="domcontentloaded",
+C:\Users\wangt-aw\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\sync_api\_generated.py:9303: in goto
+    self._sync(
+C:\Users\wangt-aw\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_page.py:473: in goto
+    return await self._main_frame.goto(**locals_to_params(locals()))
+C:\Users\wangt-aw\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_frame.py:138: in goto
+    await self._channel.send("goto", locals_to_params(locals()))
+C:\Users\wangt-aw\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_connection.py:61: in send
+    return await self._connection.wrap_api_call(
+C:\Users\wangt-aw\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_connection.py:482: in wrap_api_call
+    return await cb()
+C:\Users\wangt-aw\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_connection.py:97: in inner_send
+    result = next(iter(done)).result()
+E   playwright._impl._api_types.Error: Page closed
+E   =========================== logs ===========================
+E   navigating to "https://zjtest.gyuncai.com/mall/view/buyerLogin", waiting until "domcontentloaded"
+E   ============================================================
+2026-07-06 09:12:14 | WARNING  | UI.conftest | conftest.py:103 | 截图失败: Target page, context or browser has been closed
+2026-07-06 09:12:14 [WARNING] UI.conftest: 截图失败: Target page, context or browser has been closed
+2026-07-06 09:12:14 | WARNING  | UI.conftest | conftest.py:112 | 保存页面源码失败: Target page, context or browser has been closed
+2026-07-06 09:12:14 [WARNING] UI.conftest: 保存页面源码失败: Target page, context or browser has been closed
+RERUN
+tests/test_sales_order_flow.py::TestSalesOrderFlow::test_sales_full_order_flow[chromium] 2026-07-06 09:12:15 | INFO     | UI.tests.test_sales_order_flow | test_sales_order_flow.py:59 | ==================================================
+
+-------------------------------- live log call --------------------------------
+2026-07-06 09:12:15 [INFO] UI.tests.test_sales_order_flow: ==================================================
+2026-07-06 09:12:15 | INFO     | UI.tests.test_sales_order_flow | test_sales_order_flow.py:60 | 销售完整下单流程测试 - 开始
+2026-07-06 09:12:15 [INFO] UI.tests.test_sales_order_flow: 销售完整下单流程测试 - 开始
+2026-07-06 09:12:15 | INFO     | UI.tests.test_sales_order_flow | test_sales_order_flow.py:61 | ==================================================
+2026-07-06 09:12:15 [INFO] UI.tests.test_sales_order_flow: ==================================================
+2026-07-06 09:12:15 | INFO     | UI.tests.test_sales_order_flow | test_sales_order_flow.py:64 | --- Phase 1: 销售登录 ---
+2026-07-06 09:12:15 [INFO] UI.tests.test_sales_order_flow: --- Phase 1: 销售登录 ---
+2026-07-06 09:12:15 | INFO     | UI.pages.sales_login_page | sales_login_page.py:74 | 打开销售登录页
+2026-07-06 09:12:15 [INFO] UI.pages.sales_login_page: 打开销售登录页
+2026-07-06 09:12:15 | INFO     | UI.pages.base_page | base_page.py:152 | 导航至: https://zjtest.gyuncai.com/mall/view/buyerLogin
+2026-07-06 09:12:15 [INFO] UI.pages.base_page: 导航至: https://zjtest.gyuncai.com/mall/view/buyerLogin
+2026-07-06 09:13:05 | ERROR    | UI.conftest | conftest.py:91 | 测试失败: test_sales_full_order_flow[chromium] | tests\test_sales_order_flow.py:66: in test_sales_full_order_flow
+    login_page.open().sales_login(
+pages\sales_login_page.py:75: in open
+    self.navigate(self._url or self.SALES_URL)
+pages\base_page.py:153: in navigate
+    self.page.goto(url, wait_until="domcontentloaded",
+C:\Users\wangt-aw\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\sync_api\_generated.py:9303: in goto
+    self._sync(
+C:\Users\wangt-aw\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_page.py:473: in goto
+    return await self._main_frame.goto(**locals_to_params(locals()))
+C:\Users\wangt-aw\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_frame.py:138: in goto
+    await self._channel.send("goto", locals_to_params(locals()))
+C:\Users\wangt-aw\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_connection.py:61: in send
+    return await self._connection.wrap_api_call(
+C:\Users\wangt-aw\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_connection.py:482: in wrap_api_call
+    return await cb()
+C:\Users\wangt-aw\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_connection.py:97: in inner_send
+    result = next(iter(done)).result()
+E   playwright._impl._api_types.Error: Page closed
+E   =========================== logs ===========================
+E   navigating to "https://zjtest.gyuncai.com/mall/view/buyerLogin", waiting until "domcontentloaded"
+E   ============================================================
+2026-07-06 09:13:05 [ERROR] UI.conftest: 测试失败: test_sales_full_order_flow[chromium] | tests\test_sales_order_flow.py:66: in test_sales_full_order_flow
+    login_page.open().sales_login(
+pages\sales_login_page.py:75: in open
+    self.navigate(self._url or self.SALES_URL)
+pages\base_page.py:153: in navigate
+    self.page.goto(url, wait_until="domcontentloaded",
+C:\Users\wangt-aw\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\sync_api\_generated.py:9303: in goto
+    self._sync(
+C:\Users\wangt-aw\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_page.py:473: in goto
+    return await self._main_frame.goto(**locals_to_params(locals()))
+C:\Users\wangt-aw\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_frame.py:138: in goto
+    await self._channel.send("goto", locals_to_params(locals()))
+C:\Users\wangt-aw\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_connection.py:61: in send
+    return await self._connection.wrap_api_call(
+C:\Users\wangt-aw\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_connection.py:482: in wrap_api_call
+    return await cb()
+C:\Users\wangt-aw\AppData\Local\Programs\Python\Python310\lib\site-packages\playwright\_impl\_connection.py:97: in inner_send
+    result = next(iter(done)).result()
+E   playwright._impl._api_types.Error: Page closed
+E   =========================== logs ===========================
+E   navigating to "https://zjtest.gyuncai.com/mall/view/buyerLogin", waiting until "domcontentloaded"
+E   ============================================================
+2026-07-06 09:13:05 | WARNING  | UI.conftest | conftest.py:103 | 截图失败: Target page, context or browser has been closed
+2026-07-06 09:13:05 [WARNING] UI.conftest: 截图失败: Target page, context or browser has been closed
+2026-07-06 09:13:05 | WARNING  | UI.conftest | conftest.py:112 | 保存页面源码失败: Target page, context or browser has been closed
+2026-07-06 09:13:05 [WARNING] UI.conftest: 保存页面源码失败: Target page, context or browser has been closed
+RERUN
+tests/test_sales_order_flow.py::TestSalesOrderFlow::test_sales_full_order_flow[chromium] 2026-07-06 09:13:06 | INFO     | UI.tests.test_sales_order_flow | test_sales_order_flow.py:59 | ==================================================
+
+-------------------------------- live log call --------------------------------
+2026-07-06 09:13:06 [INFO] UI.tests.test_sales_order_flow: ==================================================
+2026-07-06 09:13:06 | INFO     | UI.tests.test_sales_order_flow | test_sales_order_flow.py:60 | 销售完整下单流程测试 - 开始
+2026-07-06 09:13:06 [INFO] UI.tests.test_sales_order_flow: 销售完整下单流程测试 - 开始
+2026-07-06 09:13:06 | INFO     | UI.tests.test_sales_order_flow | test_sales_order_flow.py:61 | ==================================================
+2026-07-06 09:13:06 [INFO] UI.tests.test_sales_order_flow: ==================================================
+2026-07-06 09:13:06 | INFO     | UI.tests.test_sales_order_flow | test_sales_order_flow.py:64 | --- Phase 1: 销售登录 ---
+2026-07-06 09:13:06 [INFO] UI.tests.test_sales_order_flow: --- Phase 1: 销售登录 ---
+2026-07-06 09:13:06 | INFO     | UI.pages.sales_login_page | sales_login_page.py:74 | 打开销售登录页
+2026-07-06 09:13:06 [INFO] UI.pages.sales_login_page: 打开销售登录页
+2026-07-06 09:13:06 | INFO     | UI.pages.base_page | base_page.py:152 | 导航至: https://zjtest.gyuncai.com/mall/view/buyerLogin
+2026-07-06 09:13:06 [INFO] UI.pages.base_page: 导航至: https://zjtest.gyuncai.com/mall/view/buyerLogin

@@ -1,0 +1,71 @@
+# ============================================
+# 用户测试数据 - 多角色配置
+# ============================================
+# 角色说明：
+#   operation - 运营人员：管理商品、订单、营销活动
+#   sales     - 销售人员：管理客户、报价、合同
+#   customer  - 客户：浏览商品、下单、查看订单
+#
+# 数据结构：
+#   valid:   有效账号（正向测试）
+#   invalid: 无效账号（反向测试）
+# ============================================
+
+# ---------- 运营角色 ----------
+operation:
+  valid:
+    - username: "operation_admin"
+      password: "Op@2024#secure"
+      desc: "运营管理员-标准账号"
+      expected_welcome: "欢迎，运营管理员"
+  invalid:
+    - username: "operation_admin"
+      password: "wrong_password"
+      desc: "运营管理员-密码错误"
+      expected_error: "用户名或密码错误"
+    - username: ""
+      password: "Op@2024#secure"
+      desc: "运营管理员-用户名为空"
+      expected_error: "请输入用户名"
+    - username: "nonexistent_user"
+      password: "any_password"
+      desc: "运营管理员-用户不存在"
+      expected_error: "用户不存在"
+
+# ---------- 销售角色 ----------
+sales:
+  valid:
+    - username: "sales_manager"
+      password: "Sales@2024#ok"
+      desc: "销售经理-标准账号"
+      expected_welcome: "欢迎，销售经理"
+  invalid:
+    - username: "sales_manager"
+      password: "wrong_password"
+      desc: "销售经理-密码错误"
+      expected_error: "用户名或密码错误"
+    - username: "sales_manager"
+      password: ""
+      desc: "销售经理-密码为空"
+      expected_error: "请输入密码"
+
+# ---------- 客户角色 ----------
+customer:
+  valid:
+    - username: "customer_user"
+      password: "Cust@2024#ok"
+      desc: "客户-标准账号"
+      expected_welcome: "欢迎，客户用户"
+    - username: "vip_customer"
+      password: "Vip@2024#gold"
+      desc: "VIP客户-高级账号"
+      expected_welcome: "欢迎，VIP客户"
+  invalid:
+    - username: "customer_user"
+      password: "wrong_password"
+      desc: "客户-密码错误"
+      expected_error: "用户名或密码错误"
+    - username: "locked_user"
+      password: "Locked@2024"
+      desc: "客户-账号已锁定"
+      expected_error: "账号已被锁定，请联系客服"
