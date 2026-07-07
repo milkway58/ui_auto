@@ -87,6 +87,15 @@ def run():
             qp.click_product_config()
             page.wait_for_timeout(3000)
 
+            # --- 弹框 .box_content 固定高度 600px ---
+            page.add_style_tag(content="""
+                [aria-label="报价单-产品方案选配"] .box_content {
+                    height: 600px !important;
+                    overflow-y: auto;
+                }
+            """)
+            logger.info("弹框 .box_content 已设置固定高度 600px")
+
             # --- 修改套数数量（el-input-number spinbutton）---
             qty_input = page.locator("input[role=\"spinbutton\"]").nth(1)
             qty_input.wait_for(state="visible", timeout=5000)
@@ -151,7 +160,12 @@ def run():
             #     }
             # }""")
 
-            logger.info("产品选配完成")
+            # --- JS 强制移除弹窗遮罩（.v-modal 残留会遮挡 fixed_box 中的提交按钮）---
+            page.evaluate("""() => {
+                document.querySelectorAll('.v-modal').forEach(el => el.remove());
+            }""")
+            page.wait_for_timeout(500)
+            logger.info("产品选配完成，遮罩已清除")
 
             # ====== 提交报价单 + 勾选 C4 + 确认 ======
             logger.info("--- 提交报价单 → 勾选 C4 → 确认 ---")
