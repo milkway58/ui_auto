@@ -53,6 +53,13 @@ reports/logs/
 allure-results/
 allure-report/
 
+# AI assistant auto-generated
+.codebuddy/memory/
+.codebuddy/plans/
+
+# Template files
+*.xlsx
+
 # OS
 .DS_Store
 Thumbs.db

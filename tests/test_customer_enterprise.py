@@ -14,6 +14,7 @@ import pytest
 from datetime import datetime
 
 from pages.customer_login_page import CustomerLoginPage
+from pages.home_page import HomePage
 from pages.enterprise_zone_page import EnterpriseZonePage
 from pages.product_detail_page import ProductDetailPage
 from pages.order_confirm_page import OrderConfirmPage
@@ -27,14 +28,15 @@ def test_customer_enterprise_order(page):
     # ====== 1. 客户登录 ======
     page.goto("https://zjtest.gyuncai.com/mall/view/login")
     login_page = CustomerLoginPage(page)
-    login_page.customer_login(
+    home_page = login_page.customer_login(
         username="18501375833",
         password="123qwe",
         company_name="上海燃气崇明有限公司",
     )
+    home_page.close_tip()
 
     # ====== 2. 进入企业专区，搜索产品 ======
-    enter_zone = EnterpriseZonePage.open_from_home(page)
+    enter_zone = EnterpriseZonePage.open_from_home(home_page.page)
     enter_zone.search_product("外购硬件")
 
     # ====== 3. 进入产品详情页（新 popup） ======
@@ -47,9 +49,6 @@ def test_customer_enterprise_order(page):
     # ====== 5. 购物车 → 订单确认 ======
     cart_page = ProductDetailPage.go_to_cart(product_detail.page)
     cart_page.select_first_product()
-    cart_page.page.wait_for_timeout(2000)
-    cart_page.scroll_to_bottom()
-    cart_page.page.wait_for_timeout(2000)
     cart_page.get_by_text("订单确认").click()
     cart_page.get_by_role("button", name="继续下单").click()
 

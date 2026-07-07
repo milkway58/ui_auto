@@ -117,7 +117,8 @@ class SalesLoginPage(BasePage):
         self.click_any(*self.LOGIN_BUTTON_ALT, timeout=3000)
 
         logger.info("登录请求已提交，等待页面响应...")
-        self.page.wait_for_timeout(2000)
+        # 显式等待：登录跳转（正常 3s）
+        self.page.wait_for_timeout(3000)
 
         # 5. 关闭首次弹窗
         try:

@@ -7,7 +7,7 @@ ProductDetailPage - 产品详情页面对象
 用法:
     detail = ProductDetailPage(popup_page)
     detail.increase_quantity(2).click_add_to_cart()
-    cart_page = ProductDetailPage.go_to_cart(detail.page)
+    customer_cart_page = ProductDetailPage.go_to_cart(detail.page)
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ import re
 from playwright.sync_api import Page
 
 from pages.base_page import BasePage
-from pages.cart_page import CartPage
+from pages.cart_page import CustomerCartPage
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -56,7 +56,7 @@ class ProductDetailPage(BasePage):
         return self
 
     @staticmethod
-    def go_to_cart(page: Page) -> CartPage:
+    def go_to_cart(page: Page) -> CustomerCartPage:
         """
         从当前 page 打开购物车 popup
 
@@ -64,11 +64,11 @@ class ProductDetailPage(BasePage):
             page: 当前页面的 Page 对象
 
         Returns:
-            CartPage: 购物车页面对象
+            CustomerCartPage: 购物车页面对象
         """
         logger.info("打开购物车")
         with page.expect_popup(timeout=8000) as page_info:
             page.locator("div").filter(has_text=re.compile(r"^购物车$")).click()
         cart_page = page_info.value
         logger.info("购物车 popup 已打开")
-        return CartPage(cart_page)
+        return CustomerCartPage(cart_page)

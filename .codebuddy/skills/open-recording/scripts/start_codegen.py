@@ -14,7 +14,8 @@ import os
 
 # ==================== 项目配置（硬编码，不依赖 .env） ====================
 BASE_URL = "https://zjtest.gyuncai.com/mall/view"
-BROWSER_TYPE = "chrome"
+BROWSER_TYPE = "chromium"
+CHANNEL = "chrome"
 VIEWPORT_WIDTH = 1280
 VIEWPORT_HEIGHT = 720
 OUTPUT_FILE = None  # None 表示输出到终端
@@ -29,10 +30,13 @@ def start_codegen(
     """启动 Playwright Codegen 录制模式"""
 
     # 使用 python -m playwright codegen 方式（Windows 兼容）
+    # --browser 只支持 cr/chromium/ff/firefox/wk/webkit
+    # 启动 Chrome 需用 --browser chromium --channel chrome
     cmd = [
         sys.executable, "-m", "playwright", "codegen",
         url,
         "--browser", browser,
+        "--channel", CHANNEL,
         "--viewport-size", f"{viewport[0]},{viewport[1]}",
         "--target", "python",
     ]

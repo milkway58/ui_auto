@@ -14,7 +14,7 @@ import re
 import pytest
 from datetime import datetime
 
-from pages.cart_page import CartPage
+from pages.cart_page import CustomerCartPage
 from pages.order_confirm_page import OrderConfirmPage
 
 
@@ -47,7 +47,7 @@ def test_customer_all_products_order(page):
         page1.locator("div").filter(has_text=re.compile(r"^购物车$")).click()
     page2 = page2_info.value
 
-    cart_page = CartPage(page2)
+    cart_page = CustomerCartPage(page2)
     cart_page.select_first_product()
     page2.get_by_text("订单确认").click()
     page2.get_by_role("button", name="继续下单").click()

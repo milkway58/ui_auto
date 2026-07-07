@@ -1,15 +1,8 @@
 """
-销售完整下单业务流程测试
+销售下单流程测试（Codegen 录制版）
 
-覆盖流程：
-1. 销售登录
-2. 搜索产品并加入购物车
-3. 购物车生成报价单
-4. 选择商机继续下单
-5. 报价单详情页上传附件并提交
-6. 产品选配并确认提交
-
-基于录制脚本优化，使用 POM 框架重构。
+基于 Playwright Codegen 录制代码转换，使用 POM 框架重构。
+录制商机: 13503: 审批商机20260706-01
 """
 import os
 
@@ -24,40 +17,37 @@ from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
-# 测试数据
+# 测试数据（来自录制）
 SALES_USERNAME = "xuzw"
 SALES_PASSWORD = "123qwe"
 SEARCH_KEYWORD = "10004188"
 ADD_TO_CART_INDEX = 1
-OPPORTUNITY_NAME = "13501: 审批商机20260701-03"
+OPPORTUNITY_NAME = "13503: 审批商机20260706-01"
 ATTACHMENT_FILE = "渠道订单导入模版.xlsx"
 
 
 @pytest.mark.sales
 @pytest.mark.order
-@pytest.mark.smoke
-class TestSalesOrderFlow:
-    """销售完整下单流程测试"""
+class TestSalesOrderFlowRecorded:
+    """销售下单流程测试（录制版）"""
 
     @pytest.mark.order(1)
-    def test_sales_full_order_flow(self, page):
+    def test_sales_full_order_flow_recorded(self, page):
         """
-        销售完整下单流程（端到端）
+        销售完整下单流程（Codegen 录制 → POM 转换）
 
         步骤:
-        1. 销售登录（xuzw/123qwe）
-        2. 搜索产品 10004188
-        3. 加入购物车
-        4. 打开购物车（新窗口）
-        5. 选择商品并生成报价单
-        6. 继续下单，选择商机
-        7. 查看报价单（新窗口）
-        8. 上传附件
-        9. 提交报价单 + 勾选C4合同
-        10. 产品选配并确认提交
+        1. 销售登录
+        2. 搜索产品 10004188 并加入购物车
+        3. 打开购物车（新窗口）
+        4. 勾选商品 → 生成报价单 → 继续下单
+        5. 选择商机 13503
+        6. 查看报价单（新窗口）
+        7. 上传附件 → 提交报价单 → 勾选 C4 合同
+        8. 产品选配 → 确认提交
         """
         logger.info("=" * 50)
-        logger.info("销售完整下单流程测试 - 开始")
+        logger.info("销售下单流程测试（录制版）- 开始")
         logger.info("=" * 50)
 
         # ====== Phase 1: 销售登录 ======
@@ -76,7 +66,6 @@ class TestSalesOrderFlow:
             .search_product(SEARCH_KEYWORD)
             .assert_search_results_visible()
         )
-        # 显式等待：搜索结果渲染完成（正常 3s）
         page.wait_for_timeout(500)
         sales_home.add_to_cart(index=ADD_TO_CART_INDEX)
 
@@ -93,7 +82,7 @@ class TestSalesOrderFlow:
             .continue_order()
         )
 
-        # ====== Phase 5: 选择商机 ======
+        # ====== Phase 5: 选择商机（录制值: 13503） ======
         logger.info("--- Phase 5: 选择商机 ---")
         cart_page.select_opportunity(OPPORTUNITY_NAME)
 
@@ -106,7 +95,6 @@ class TestSalesOrderFlow:
 
         # ====== Phase 7: 上传附件 + 提交报价单 ======
         logger.info("--- Phase 7: 上传附件 + 提交报价单 ---")
-        # 构建附件完整路径（优先查找项目根目录及 data 目录）
         attachment_path = _resolve_attachment_path(ATTACHMENT_FILE)
         (
             quotation_page
@@ -115,7 +103,7 @@ class TestSalesOrderFlow:
             .check_auto_contract()
             .confirm_dialog()
         )
-        # 第二次确认（录制中有两次）
+        # 录制中有第二次确认弹窗
         quotation_page.confirm_dialog()
 
         # ====== Phase 8: 产品选配并提交 ======
@@ -130,32 +118,24 @@ class TestSalesOrderFlow:
         )
 
         logger.info("=" * 50)
-        logger.info("销售完整下单流程测试 - 完成")
+        logger.info("销售下单流程测试（录制版）- 完成")
         logger.info("=" * 50)
 
 
 def _resolve_attachment_path(filename: str) -> str:
-    """
-    解析附件文件路径，按优先级查找：
-    1. 绝对路径直接返回
-    2. 项目根目录
-    3. data/ 目录
-    """
+    """解析附件文件路径"""
     if os.path.isabs(filename):
         return filename
 
     base_dir = settings.base_dir
 
-    # 尝试项目根目录
     path = base_dir / filename
     if path.exists():
         return str(path)
 
-    # 尝试 data 目录
     path = base_dir / "data" / filename
     if path.exists():
         return str(path)
 
-    # 回退到文件名本身（让 Playwright 报错定位问题）
     logger.warning(f"附件文件未找到: {filename}，回退到原始路径")
     return filename
