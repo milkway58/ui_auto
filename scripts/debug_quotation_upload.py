@@ -103,28 +103,38 @@ def run():
             qty_input.fill("2")
             qty_input.press("Enter")
             logger.info("套数设为 2")
-            # 备用B：JS set value + dispatchEvent
-            # page.evaluate("""() => {
-            #     const spin = document.querySelectorAll('input[role="spinbutton"]')[1];
-            #     if (spin) { spin.value = '2'; spin.dispatchEvent(new Event('input',{bubbles:true})); }
-            # }""")
-            # 备用C：click 递增按钮
-            # page.locator(".el-input-number__increase").nth(1).click()
-
             page.wait_for_timeout(500)
 
-            # --- 添加商品 ---
-            page.get_by_role("button", name="").nth(1).click()
-            logger.info("添加商品按钮已点击")
-            # 备用B：文本定位
-            # page.locator("button:has-text('添加')").nth(1).click(force=True)
-            # 备用C：JS click
-            # page.evaluate("""() => {
-            #     const btns = document.querySelectorAll('.el-dialog button[class*="add"]');
-            #     if (btns.length > 0) btns[btns.length - 1].click();
-            # }""")
+            # # --- 添加商品 ---
+            # page.get_by_role("button", name="添加").nth(1).click()
+            # logger.info("添加商品按钮已点击")
+            # page.wait_for_timeout(1000)
 
-            page.wait_for_timeout(1000)
+            # --- 解除弹窗底部 overflow:hidden 截断 ---
+            # page.evaluate("""() => {
+            #     const dialog = document.querySelector('[aria-label="报价单-产品方案选配"]');
+            #     if (dialog) {
+            #         // 解除所有 overflow:hidden 容器
+            #         dialog.querySelectorAll('*').forEach(el => {
+            #             const style = window.getComputedStyle(el);
+            #             if (style.overflow === 'hidden') {
+            #                 el.style.overflow = 'visible';
+            #             }
+            #         });
+            #     }
+            # }""")
+            #             logger.info("弹窗 overflow:hidden 已解除")
+
+            # --- 断言：弹窗底部是否出现 ¥17200.00 元 ---
+            price_locator = page.locator(
+                '[aria-label="报价单-产品方案选配"]'
+            ).locator("text=17200.00")
+            if price_locator.is_visible(timeout=5000):
+                logger.info("断言通过：弹窗底部已出现 ¥17200.00 元")
+            else:
+                logger.warning("断言失败：未找到 ¥17200.00 元，等待确认提交按钮出现")
+                page.get_by_text("确认提交", exact=True).wait_for(state="visible", timeout=10000)
+                logger.info("确认提交按钮已出现")
 
             # --- 确认提交（按钮被弹窗截断不可见）---
             # 滚动所有可能的弹窗容器，让底部按钮进入视口
@@ -141,24 +151,8 @@ def run():
             btn.scroll_into_view_if_needed()
             btn.click(force=True)
             logger.info("确认提交已点击")
-            # 备用B：修改弹窗 CSS 高度
-            # page.evaluate("""() => {
-            #     const d = document.querySelector('.el-dialog');
-            #     if (d) { d.style.maxHeight='95vh'; d.style.overflow='visible'; }
-            #     const b = document.querySelector('.el-dialog__body');
-            #     if (b) { b.style.maxHeight='80vh'; b.style.overflowY='auto'; }
-            # }""")
-            # page.get_by_role("button", name="确认提交").click(force=True)
-            # 备用C：JS 原生 dispatchEvent
-            # page.evaluate("""() => {
-            #     const els = document.querySelectorAll('span, button, div');
-            #     for (const el of els) {
-            #         if (el.textContent.trim()==='确认提交') {
-            #             el.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}));
-            #             return;
-            #         }
-            #     }
-            # }""")
+            
+           
 
             # --- JS 强制移除弹窗遮罩（.v-modal 残留会遮挡 fixed_box 中的提交按钮）---
             page.evaluate("""() => {
