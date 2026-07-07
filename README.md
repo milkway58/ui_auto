@@ -146,3 +146,4 @@ class HomePage(BasePage):
 3. 在 `config/settings.py` 的 `get_credentials()` 中注册角色
 4. 在 `tests/conftest.py` 中添加对应的登录态 fixture
 5. 在 `pytest.ini` 的 markers 中注册角色标记
+# ui_auto
