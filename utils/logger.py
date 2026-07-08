@@ -9,6 +9,7 @@
     logger = get_logger(__name__)
     logger.info("开始执行登录测试")
 """
+import io
 import logging
 import sys
 from pathlib import Path
@@ -34,8 +35,9 @@ def _setup_root_logger() -> None:
 
     formatter = logging.Formatter(_LOG_FORMAT, datefmt=_DATE_FORMAT)
 
-    # 控制台输出
-    console_handler = logging.StreamHandler(sys.stdout)
+    # 控制台输出（UTF-8 编码，避免 Windows GBK 无法编码 ✓ 等 Unicode 符号）
+    utf8_stream = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+    console_handler = logging.StreamHandler(utf8_stream)
     console_handler.setLevel(level)
     console_handler.setFormatter(formatter)
     root.addHandler(console_handler)

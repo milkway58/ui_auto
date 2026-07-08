@@ -10,10 +10,11 @@ QuotationPage - 报价单页面对象
 """
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from playwright.sync_api import Page
+from playwright.sync_api import Page, expect
 
 from pages.base_page import BasePage
 from utils.logger import get_logger
@@ -146,32 +147,80 @@ class QuotationPage(BasePage):
     # ==========================================
     def confirm_dialog(self, label: str | None = None) -> "QuotationPage":
         """
-        点击弹窗中的「确 定」按钮（自动定位最后弹出的可见弹窗）
+        点击弹窗中的「确 定」按钮（方案A: footer primary + force）
 
         Args:
-            label: 弹窗 aria-label（如 "提示"），不传则取最后弹出的弹窗
+            label: 弹窗 aria-label（如 "提示"），不传则取最后一个「确 定」按钮
 
         Returns:
             self（支持链式调用）
         """
         logger.info(f"点击确认弹窗「确 定」, label={label or 'auto-last'}")
-        btn = None
+
+        # 定位弹框容器
         if label:
-            # 精确定位指定弹窗
-            try:
-                dialog = self.page.get_by_label(label)
-                btn = dialog.locator("button:has-text('确 定')")
-                btn.wait_for(state="visible", timeout=5000)
-            except Exception:
-                logger.warning(f"通过 label={label} 定位弹窗失败，降级到 last")
-        if not btn:
-            # 兜底：取最后弹出的可见弹窗（最新弹窗即目标）
-            btn = self.page.locator(
-                ".el-dialog__wrapper:visible"
-            ).last.locator("button:has-text('确 定')")
-        btn.click(force=True)
+            dialog = self.page.get_by_label(label)
+        else:
+            dialog = self.page.locator(".el-dialog__wrapper:visible").last
+
+        # 点击前断言弹框状态（标题含"提示" + "确定"按钮存在）
+        self._assert_dialog_ready(dialog, context=label or "auto-last")
+
+        # # 方案A: footer primary + force click 绕过 actionability 检测
+        # btn = dialog.locator(".el-dialog__footer button.el-button--primary")
+        # btn.wait_for(state="attached", timeout=5000)
+        # btn.click(force=True)
+        # logger.info("确认按钮已点击（方案A: footer primary + force）")
+
+
+        # # 方案C: JS evaluate 强制触发（备选）
+        btn = dialog.locator("button:has-text('确 定')")
+        btn.evaluate("el => el.click()")
+        logger.info("确认按钮已点击（方案C: JS click）")
+
         self.page.wait_for_timeout(3000)
         return self
+
+    def _assert_dialog_ready(self, dialog, context: str = "") -> None:
+        """
+        断言弹框就绪：标题含"提示" + "确定"按钮已挂载
+
+        Args:
+            dialog: Playwright Locator for the dialog wrapper
+            context: 描述信息，用于失败日志
+        """
+        ctx = f"[{context}]" if context else ""
+
+        # 断言1: 标题含"提示"
+        title_loc = dialog.locator(".el-dialog__title, .el-dialog__header")
+        try:
+            expect(title_loc.first).to_contain_text("提示", timeout=5000)
+            logger.info(f"✓ 弹框断言通过: 标题「提示」存在 {ctx}")
+        except Exception:
+            title_html = title_loc.first.inner_html()[:300] if title_loc.count() > 0 else "NOT_FOUND"
+            logger.error(f"✗ 弹框断言失败: 标题「提示」不存在 {ctx}\n"
+                         f"  → DOM 诊断: {title_html}")
+            raise AssertionError(
+                f"弹框标题「提示」断言失败 [{context}]\n"
+                f"  DOM: {title_html}"
+            )
+
+        # 断言2: "确定"按钮存在
+        btn_loc = dialog.locator("button:has-text('确 定')")
+        try:
+            expect(btn_loc.first).to_be_attached(timeout=5000)
+            logger.info(f"✓ 弹框断言通过: 「确定」按钮已挂载 {ctx}")
+        except Exception:
+            btn_count = btn_loc.count()
+            wrapper_html = dialog.first.inner_html()[:500] if dialog.count() > 0 else "NOT_FOUND"
+            logger.error(f"✗ 弹框断言失败: 「确定」按钮不存在 {ctx}\n"
+                         f"  → 匹配按钮数: {btn_count}\n"
+                         f"  → DOM 诊断: {wrapper_html}")
+            raise AssertionError(
+                f"弹框「确定」按钮断言失败 [{context}]\n"
+                f"  匹配按钮数: {btn_count}\n"
+                f"  DOM: {wrapper_html}"
+            )
 
     # ==========================================
     # 产品选配
