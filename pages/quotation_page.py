@@ -95,12 +95,11 @@ class QuotationPage(BasePage):
         # 等待第1个「上传附件」按钮变为可见且启用
         upload_btn = self.page.get_by_role("button", name="上传附件").first
         upload_btn.wait_for(state="visible", timeout=10000)
-        self.page.wait_for_timeout(500)  # 等 disabled 解除
-        # 通过 file_chooser 拦截文件对话框，匹配录制的 click + set_input_files 模式
+        expect(upload_btn).to_be_enabled(timeout=5000)
         with self.page.expect_file_chooser() as fc_info:
             upload_btn.click()
         fc_info.value.set_files(file_path)
-        self.page.wait_for_timeout(3000)
+        self.page.wait_for_timeout(1000)
         logger.info("附件上传完成")
         return self
 
@@ -116,8 +115,7 @@ class QuotationPage(BasePage):
         """
         logger.info("点击「提交报价单」")
         self.click_any(*self.SUBMIT_QUOTATION_ALT)
-        # 显式等待：提交响应（正常 3s）
-        self.page.wait_for_timeout(3000)
+        self.page.wait_for_timeout(1000)
         return self
 
     # ==========================================
@@ -178,7 +176,7 @@ class QuotationPage(BasePage):
         btn.evaluate("el => el.click()")
         logger.info("确认按钮已点击（方案C: JS click）")
 
-        self.page.wait_for_timeout(3000)
+        self.page.wait_for_timeout(1000)
         return self
 
     def _assert_dialog_ready(self, dialog, context: str = "") -> None:
@@ -245,8 +243,7 @@ class QuotationPage(BasePage):
             self（支持链式调用）
         """
         logger.info("点击添加商品按钮")
-        # 显式等待：产品选配页面加载（正常 3s）
-        self.page.wait_for_timeout(3000)
+        self.page.wait_for_timeout(1000)
         # 点击第二个添加按钮（录制中使用 nth=1）
         for selector in self.ADD_PRODUCT_BTN_ALT:
             try:
@@ -270,8 +267,7 @@ class QuotationPage(BasePage):
         """
         logger.info("点击「确认提交」")
         self.click_any(*self.CONFIRM_SUBMIT_ALT)
-        # 显式等待：提交请求响应（正常 3s）
-        self.page.wait_for_timeout(3000)
+        self.page.wait_for_timeout(1000)
         return self
 
     # ==========================================

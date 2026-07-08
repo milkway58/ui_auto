@@ -117,8 +117,15 @@ class SalesLoginPage(BasePage):
         self.click_any(*self.LOGIN_BUTTON_ALT, timeout=3000)
 
         logger.info("登录请求已提交，等待页面响应...")
-        # 显式等待：登录跳转（正常 3s）
-        self.page.wait_for_timeout(3000)
+        # 等待首页标识元素可见（替代硬编码 3s）
+        for selector in self.SALES_HOME_INDICATOR_ALT[:2]:
+            try:
+                self.wait_for_visible(selector, timeout=5000)
+                break
+            except Exception:
+                continue
+        # 兜底等待确保 Vue Router 完成跳转
+        self.page.wait_for_timeout(1000)
 
         # 5. 关闭首次弹窗
         try:

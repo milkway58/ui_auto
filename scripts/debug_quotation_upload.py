@@ -10,6 +10,7 @@
 import os
 import re
 import sys
+import time as _time
 from playwright.sync_api import sync_playwright
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -22,7 +23,7 @@ logger = get_logger(__name__)
 
 SALES_USERNAME = "xuzw"
 SALES_PASSWORD = "123qwe"
-QUOTATION_URL = "https://zjtest.gyuncai.com/mall/mall-view-admin/businessOrder/detail?orderId=53497"
+QUOTATION_URL = "https://zjtest.gyuncai.com/mall/mall-view-admin/businessOrder/detail?orderId=53498"
 ATTACHMENT_FILE = r"C:\Users\wangt-aw\Downloads\test_datas\渠道订单导入模版.xlsx"
 
 
@@ -43,11 +44,11 @@ def run():
         browser = p.chromium.launch(channel="chrome", headless=False)
         context = browser.new_context(viewport={"width": 1920, "height": 1080})
         page = context.new_page()
-        logger.info("[Step 1/9] 浏览器启动完成")
+        logger.info("[Step 1/14] 浏览器启动完成")
 
         try:
             # ====== 销售登录 ======
-            logger.info("[Step 2/9] 开始销售登录 ---")
+            logger.info("[Step 2/14] 开始销售登录 ---")
             logger.info("  → 打开登录页面")
             login_page = SalesLoginPage(page)
             login_page.open()
@@ -58,28 +59,28 @@ def run():
             logger.info("  → 销售登录完成 ✓")
 
             # ====== 跳转报价单详情页 ======
-            logger.info("[Step 3/9] 跳转报价单详情页 ---")
+            logger.info("[Step 3/14] 跳转报价单详情页 ---")
             logger.info("  → 跳转 URL: %s", QUOTATION_URL)
-            page.goto(QUOTATION_URL, wait_until="networkidle")
-            page.wait_for_timeout(15000)
+            page.goto(QUOTATION_URL, wait_until="domcontentloaded")
+            page.locator("label.el-checkbox").first.wait_for(state="visible", timeout=15000)
             qp = QuotationPage(page)
             logger.info("  → 报价单详情页加载完成 ✓")
 
             # ====== 勾选「审批通过后自动生成C4合同」复选框 ======
-            logger.info("[Step 4/9] 勾选 C4 合同复选框 ---")
+            logger.info("[Step 4/14] 勾选 C4 合同复选框 ---")
             target = page.locator("label.el-checkbox").filter(
                 has_text=re.compile(r"审批通过后自动生成C4合同")
             ).locator("span.el-checkbox__input")
             logger.info("  → 定位复选框并滚动到可见区域")
             target.scroll_into_view_if_needed()
-            page.wait_for_timeout(300)
+            page.wait_for_timeout(200)
             logger.info("  → 点击复选框（span.el-checkbox__input）")
             target.click(force=True)
-            page.wait_for_timeout(300)
+            page.wait_for_timeout(200)
             logger.info("  → C4 合同复选框已勾选 ✓")
 
             # ====== 上传附件 ======
-            logger.info("[Step 5/9] 上传附件 ---")
+            logger.info("[Step 5/14] 上传附件 ---")
             attachment_path = _resolve_attachment_path(ATTACHMENT_FILE)
             logger.info("  → 附件路径: %s", attachment_path)
             qp.upload_attachment(attachment_path)
@@ -88,10 +89,10 @@ def run():
 
 
             # ====== 产品选配 + 添加 + 确认提交 ======
-            logger.info("[Step 6/9] 产品选配 ---")
+            logger.info("[Step 6/14] 产品选配 ---")
             logger.info("  → 点击产品选配按钮")
             qp.click_product_config()
-            page.wait_for_timeout(3000)
+            page.locator('[aria-label="报价单-产品方案选配"]').wait_for(state="visible", timeout=10000)
             logger.info("  → 产品选配弹框已打开 ✓")
 
             logger.info("  → 设置弹框 .box_content 固定高度 600px")
@@ -110,19 +111,75 @@ def run():
             qty_input.fill("2")
             qty_input.press("Enter")
             logger.info("  → 套数设为 2 ✓")
-            page.wait_for_timeout(500)
+            page.wait_for_timeout(200)
 
             logger.info("  → 断言弹窗底部金额 ¥17200.00")
             price_locator = page.locator(
                 '[aria-label="报价单-产品方案选配"]'
             ).locator("text=17200.00")
             if price_locator.is_visible(timeout=5000):
-                logger.info("  → 断言通过：弹窗底部已出现 ¥17200.00 元 ✓")
+                logger.info("  → 弹窗底部已出现 ¥17200.00 元 ✓")
+                logger.info("  → 点击「确认提交」按钮")
+                confirm_btn = page.get_by_text("确认提交", exact=True)
+                confirm_btn.wait_for(state="visible", timeout=10000)
+                confirm_btn.scroll_into_view_if_needed()
+                confirm_btn.click()
+                logger.info("  → 确认提交已点击 ✓")
+                logger.info("  → 等待弹框关闭...")
+                page.locator('[aria-label="报价单-产品方案选配"]').wait_for(state="hidden", timeout=10000)
+                logger.info("  → 弹框已关闭 ✓")
             else:
-                logger.warning("  → 断言失败：未找到 ¥17200.00 元，等待确认提交按钮出现")
-                page.get_by_text("确认提交", exact=True).wait_for(state="visible", timeout=10000)
-                logger.info("  → 确认提交按钮已出现 ✓")
+                logger.error("  → 未找到 ¥17200.00 元，跳过提交")
 
+
+            # ====== 添加产品（搜索 + 勾选 + 确认）======
+            logger.info("[Step 7/14] 点击「添加产品」按钮 ---")
+            add_product_btn = page.locator("span:has(i.el-icon-circle-plus)").first
+            add_product_btn.scroll_into_view_if_needed()
+            page.wait_for_timeout(300)
+            add_product_btn.click(force=True)
+            logger.info("  → 添加产品按钮已点击 ✓")
+            page.wait_for_timeout(2000)
+
+            logger.info("[Step 8/14] 搜索产品 10007519 ---")
+            # 仅在可见弹窗内查找搜索输入框，避免匹配页面中隐藏的 input
+            search_input = page.locator(".el-dialog__wrapper:not([style*='display: none']) input[placeholder*='搜索'], .el-dialog__wrapper:not([style*='display: none']) input[placeholder*='物料']").first
+            search_input.wait_for(state="visible", timeout=5000)
+            search_input.fill("10007519")
+            logger.info("  → 已输入物料编码 10007519")
+            search_btn = page.locator(".el-input__suffix .el-icon-search, button:has-text('搜索'), [class*='search'] i").first
+            if search_btn.is_visible(timeout=2000):
+                search_btn.click()
+                logger.info("  → 已点击搜索按钮 ✓")
+            else:
+                search_input.press("Enter")
+                logger.info("  → 回车触发搜索 ✓")
+            page.wait_for_timeout(1500)
+
+            logger.info("[Step 9/14] 勾选产品并确认 ---")
+            # 方案 D：dispatch_event('click') 直接触发 Vue 响应
+            row = page.locator(".el-table__row:has(td:has-text('10007519'))").first
+            checkbox_inner = row.locator(".el-checkbox__inner").first
+            checkbox_inner.scroll_into_view_if_needed()
+            page.wait_for_timeout(300)
+            checkbox_inner.dispatch_event("click")
+            logger.info("  → 产品复选框已勾选 ✓")
+            confirm_btn = page.get_by_text("确认", exact=True).last
+            confirm_btn.scroll_into_view_if_needed()
+            confirm_btn.click(force=True)
+            logger.info("  → 确认按钮已点击，等待 3s ...")
+            page.wait_for_timeout(3000)
+
+            logger.info("  → 关闭添加产品弹框")
+            close_btn = page.locator("i.el-icon-close.close").first
+            close_btn.scroll_into_view_if_needed()
+            close_btn.click(force=True)
+            page.wait_for_timeout(500)
+            logger.info("  → 弹框已关闭 ✓")
+
+            logger.info("  → 产品添加确认完成 ✓")
+
+            
             logger.info("  → 滚动弹窗容器到底部")
             page.evaluate("""() => {
                 const body = document.querySelector('.el-dialog__body');
@@ -132,34 +189,28 @@ def run():
                 const wrapper = document.querySelector('.el-dialog__wrapper');
                 if (wrapper) wrapper.scrollTop = wrapper.scrollHeight;
             }""")
-            page.wait_for_timeout(500)
+            page.wait_for_timeout(200)
             logger.info("  → 弹窗已滚动到底部 ✓")
-
-            logger.info("  → 点击「确认提交」按钮")
-            btn = page.get_by_text("确认提交", exact=True)
-            btn.scroll_into_view_if_needed()
-            btn.click(force=True)
-            logger.info("  → 确认提交已点击 ✓")
 
             logger.info("  → 移除弹窗遮罩 .v-modal")
             page.evaluate("""() => {
                 document.querySelectorAll('.v-modal').forEach(el => el.remove());
             }""")
-            page.wait_for_timeout(500)
+            page.wait_for_timeout(200)
             logger.info("  → 遮罩已清除 ✓")
 
             # ====== 提交报价单 + 确认（不操作弹框中的 C4 复选框）======
-            logger.info("[Step 7/9] 点击提交报价单 ---")
+            logger.info("[Step 12/14] 点击提交报价单 ---")
             logger.info("  → 点击页面底部「提交报价单」按钮")
             qp.submit_quotation()
             logger.info("  → 提交报价单按钮已点击 ✓")
 
-            logger.info("[Step 8/9] 确认弹框（跳过复选框操作）---")
+            logger.info("[Step 13/14] 确认弹框（跳过复选框操作）---")
             logger.info("  → 开始断言弹框 + 点击确定按钮")
             qp.confirm_dialog()
             logger.info("  → 确认弹框已处理 ✓")
 
-            logger.info("[Step 9/9] 提交完成 ✓")
+            logger.info("[Step 14/14] 提交完成 ✓")
 
             logger.info("=" * 50)
             logger.info("调试脚本执行完成")
@@ -169,7 +220,9 @@ def run():
             logger.error(f"执行失败: {e}")
             raise
         finally:
-            input("按 Enter 关闭浏览器...")
+            for i in range(3, 0, -1):
+                logger.info(f"浏览器将在 {i} 秒后自动关闭...")
+                _time.sleep(1)
             context.close()
             browser.close()
 
