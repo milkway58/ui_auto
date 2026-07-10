@@ -23,7 +23,7 @@ logger = get_logger(__name__)
 
 SALES_USERNAME = "xuzw"
 SALES_PASSWORD = "123qwe"
-QUOTATION_URL = "https://zjtest.gyuncai.com/mall/mall-view-admin/businessOrder/detail?orderId=53498"
+QUOTATION_URL = "https://zjtest.gyuncai.com/mall/mall-view-admin/businessOrder/detail?orderId=53502"
 ATTACHMENT_FILE = r"C:\Users\wangt-aw\Downloads\test_datas\渠道订单导入模版.xlsx"
 
 
@@ -70,13 +70,22 @@ def run():
             logger.info("[Step 4/14] 勾选 C4 合同复选框 ---")
             target = page.locator("label.el-checkbox").filter(
                 has_text=re.compile(r"审批通过后自动生成C4合同")
-            ).locator("span.el-checkbox__input")
+            ).locator(".el-checkbox__inner")
             logger.info("  → 定位复选框并滚动到可见区域")
             target.scroll_into_view_if_needed()
             page.wait_for_timeout(200)
-            logger.info("  → 点击复选框（span.el-checkbox__input）")
-            target.click(force=True)
+            logger.info("  → 点击复选框（.el-checkbox__inner）")
+            target.click()
             page.wait_for_timeout(200)
+            # 验证复选框勾选状态
+            checkbox_label = page.locator("label.el-checkbox").filter(
+                has_text=re.compile(r"审批通过后自动生成C4合同")
+            )
+            is_checked = "is-checked" in (checkbox_label.get_attribute("class") or "")
+            if is_checked:
+                logger.info("  → [验证] C4 合同复选框状态: 已勾选 ✓")
+            else:
+                logger.error("  → [验证] C4 合同复选框状态: 未勾选 ✗")
             logger.info("  → C4 合同复选框已勾选 ✓")
 
             # ====== 上传附件 ======
@@ -91,8 +100,17 @@ def run():
             # ====== 产品选配 + 添加 + 确认提交 ======
             logger.info("[Step 6/14] 产品选配 ---")
             logger.info("  → 点击产品选配按钮")
+            # 确保「产品选配」按钮可见再点击
+            config_btn = page.locator("text=产品选配").first
+            config_btn.wait_for(state="visible", timeout=10000)
+            config_btn.scroll_into_view_if_needed()
+            config_btn.click()
+            page.wait_for_timeout(500)
             qp.click_product_config()
-            page.locator('[aria-label="报价单-产品方案选配"]').wait_for(state="visible", timeout=10000)
+            page.wait_for_timeout(500)
+            # 等待弹框真正显示
+            dialog = page.locator('[aria-label="报价单-产品方案选配"]')
+            dialog.wait_for(state="visible", timeout=15000)
             logger.info("  → 产品选配弹框已打开 ✓")
 
             logger.info("  → 设置弹框 .box_content 固定高度 600px")

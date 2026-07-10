@@ -95,7 +95,7 @@ class SalesHomePage(BasePage):
         """等待搜索结果表格中物料编码可见"""
         logger.info(f"等待搜索结果物料编码: {keyword}")
         try:
-            expect(self.page.locator(f"text={keyword}").first).to_be_visible(timeout=2000)
+            expect(self.page.locator(f"text={keyword}").first).to_be_visible(timeout=1000)
             logger.info(f"物料编码 {keyword} 已出现")
         except Exception as e:
             logger.warning(f"等待物料编码出现超时或失败: {e}")
@@ -165,5 +165,5 @@ class SalesHomePage(BasePage):
         """断言搜索结果显示（确认表格中至少有一个加入购物车按钮可见）"""
         logger.info("断言搜索结果可见")
         # 用 span.linear_btn 精确匹配，并限定 :visible 避免命中隐藏克隆 DOM
-        expect(self.locate("span.linear_btn:has-text('加入购物车'):visible").first).to_be_visible(timeout=3000)
+        expect(self.locate("span.linear_btn:has-text('加入购物车'):visible").first).to_be_visible(timeout=1000)
         return self

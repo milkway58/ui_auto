@@ -129,11 +129,10 @@ class QuotationPage(BasePage):
             self（支持链式调用）
         """
         logger.info("勾选「审批通过后自动生成C4合同」")
-        # 录制方式：先定位含 C4 合同文本的 label，再取其内部 .el-checkbox__input span
         checkbox = (
             self.page.locator("label")
             .filter(has_text=re.compile(r"^审批通过后自动生成C4合同$"))
-            .locator("span.el-checkbox__input")
+            .locator(".el-checkbox__inner")
         )
         checkbox.wait_for(state="visible", timeout=5000)
         checkbox.click()

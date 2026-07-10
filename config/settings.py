@@ -43,8 +43,9 @@ class Settings(BaseSettings):
     TIMEZONE: str = Field(default="Asia/Shanghai", description="浏览器时区")
 
     # ---------- 超时与重试 ----------
-    TIMEOUT: int = Field(default=30000, description="默认操作超时(毫秒)")
-    NAVIGATION_TIMEOUT: int = Field(default=60000, description="导航超时(毫秒)")
+    NETWORK_IDLE_TIMEOUT: int = Field(default=5000, description="网络空闲等待超时(毫秒)")
+    TIMEOUT: int = Field(default=10000, description="默认操作超时(毫秒)")
+    NAVIGATION_TIMEOUT: int = Field(default=5000, description="导航超时(毫秒)")
     RETRY_TIMES: int = Field(default=2, description="失败重试次数")
     RETRY_DELAY: int = Field(default=1, description="重试间隔(秒)")
 

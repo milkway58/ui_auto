@@ -3,7 +3,8 @@
 
 提供统一的日志记录能力，输出到控制台和文件。
 所有 BasePage 和业务模块通过 get_logger() 获取 logger 实例。
-每次执行生成独立日志文件，文件名格式：YYYY-MM-DD_HH-MM-SS.log
+每次执行生成独立日志文件，文件名格式：SS-MM-HH_DD-MM-YYYY.log（时间分量倒序，字母排序=最新在前）
+同时生成 latest.log 始终指向最新一次执行日志。
 
 用法:
     from utils.logger import get_logger
@@ -12,6 +13,7 @@
 """
 import io
 import logging
+import shutil
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -53,12 +55,16 @@ def _setup_root_logger() -> None:
     root.addHandler(console_handler)
 
     # 文件输出（完整格式，每次执行独立文件）
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    timestamp = datetime.now().strftime("%S-%M-%H_%d-%m-%Y")
     log_file = _LOG_DIR / f"{timestamp}.log"
     file_handler = logging.FileHandler(str(log_file), encoding="utf-8")
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(file_formatter)
     root.addHandler(file_handler)
+
+    # 同步 latest.log 始终指向最新日志
+    latest_file = _LOG_DIR / "latest.log"
+    shutil.copy2(str(log_file), str(latest_file))
 
     # 首行记录日志文件路径
     root.info(f"日志文件: {log_file}")

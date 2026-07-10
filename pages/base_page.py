@@ -15,7 +15,7 @@ BasePage - 所有页面对象的基类
 import time
 import uuid
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 from playwright.sync_api import Page, Locator, expect
 
@@ -36,6 +36,7 @@ class BasePage:
     def __init__(self, page: Page):
         self.page = page
         self.timeout = settings.TIMEOUT
+        self.network_idle_timeout = settings.NETWORK_IDLE_TIMEOUT
         self._url: Optional[str] = None
 
     # ==========================================
@@ -94,7 +95,7 @@ class BasePage:
         """返回匹配文本的 Locator（封装 page.get_by_text）"""
         return self.page.get_by_text(text, **kwargs)
 
-    def get_by_role(self, role: str, **kwargs):
+    def get_by_role(self, role: Any, **kwargs):
         """返回匹配角色的 Locator（封装 page.get_by_role）"""
         return self.page.get_by_role(role, **kwargs)
 
@@ -118,7 +119,7 @@ class BasePage:
             except Exception:
                 continue
         logger.warning(f"click_any 未找到任何匹配元素: {selectors}")
-        self.screenshot(f"WARN_click_any_not_found_{selectors[0].replace('=', '_')[:30]}")
+        self.screenshot(f"WARN_click_any_not_found_{selectors[0].replace('=', '_')[:3]}")
         return self
 
     def click_first(self, *selectors: str, timeout: Optional[int] = None) -> "BasePage":
@@ -147,7 +148,7 @@ class BasePage:
                 continue
         logger.warning(f"click_first 未命中任何选择器: {selectors}")
         return self
-        
+
 
     def wait_for_any_visible(self, *selectors: str, timeout: Optional[int] = None) -> "BasePage":
         """
@@ -309,7 +310,7 @@ class BasePage:
     def wait_for_network_idle(self) -> "BasePage":
         """等待网络空闲（确保SPA异步请求完成）"""
         try:
-            self.page.wait_for_load_state("networkidle", timeout=self.timeout)
+            self.page.wait_for_load_state("networkidle", timeout=self.network_idle_timeout)
         except Exception as e:
             logger.warning(f"等待networkidle超时（非致命）: {e}")
         return self
