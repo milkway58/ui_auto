@@ -13,8 +13,6 @@
 import pytest
 from datetime import datetime
 
-from pages.customer_login_page import CustomerLoginPage
-from pages.home_page import HomePage
 from pages.enterprise_zone_page import EnterpriseZonePage
 from pages.product_detail_page import ProductDetailPage
 from pages.order_confirm_page import OrderConfirmPage
@@ -27,16 +25,21 @@ def test_customer_enterprise_order(page):
 
     # ====== 1. 客户登录 ======
     page.goto("https://zjtest.gyuncai.com/mall/view/login")
-    login_page = CustomerLoginPage(page)
-    home_page = login_page.customer_login(
-        username="18501375833",
-        password="123qwe",
-        company_name="上海燃气崇明有限公司",
-    )
-    home_page.close_tip()
+    page.get_by_text("密码登录").click()
+    page.get_by_placeholder("请输入您的手机号码").click()
+    page.get_by_placeholder("请输入您的手机号码").fill("18501375833")
+    page.get_by_placeholder("登录密码").click()
+    page.get_by_placeholder("登录密码").fill("123qwe")
+    page.get_by_role("button", name="立即登录").click()
+    page.get_by_role("button", name="我知道了").click()
+    page.wait_for_timeout(1000)
+    page.evaluate("window.scrollTo(0, document.body.scrollHeight * 2 / 3)")
+    page.wait_for_timeout(500)
+    page.get_by_text("上海燃气崇明有限公司").click()
+    page.wait_for_timeout(500)
 
     # ====== 2. 进入企业专区，搜索产品 ======
-    enter_zone = EnterpriseZonePage.open_from_home(home_page.page)
+    enter_zone = EnterpriseZonePage.open_from_home(page)
     enter_zone.search_product("外购硬件")
 
     # ====== 3. 进入产品详情页（新 popup） ======

@@ -21,6 +21,8 @@ import re
 
 import pytest
 
+from playwright.sync_api import expect
+
 from pages.sales_login_page import SalesLoginPage
 from pages.sales_home_page import SalesHomePage
 from pages.cart_page import SalesCartPage
@@ -102,7 +104,7 @@ class TestSalesOrder:
         if not cart_has_items:
             logger.info("  → 购物车内无物料，自动刷新页面并等待 3s ...")
             cart_page.page.reload()
-            cart_page.page.wait_for_timeout(3000)
+            cart_page.page.wait_for_load_state("networkidle", timeout=10000)
             logger.info("  → 页面已刷新 ✓")
 
         # ====== Phase 4: 生成报价单 ======
@@ -122,7 +124,7 @@ class TestSalesOrder:
         logger.info("--- Phase 6: 查看报价单 ---")
         quotation_page_obj = cart_page.click_view_quotation()
         quotation_page = QuotationPage(quotation_page_obj)
-        quotation_page_obj.wait_for_timeout(3000)
+        quotation_page_obj.wait_for_load_state("networkidle", timeout=10000)
         logger.info("  → 报价单详情页加载完成 ✓")
 
         # ================================================================
@@ -140,17 +142,13 @@ class TestSalesOrder:
         quotation_page_obj.wait_for_timeout(200)
         logger.info("  → 点击复选框（.el-checkbox__inner）")
         target.click()
-        quotation_page_obj.wait_for_timeout(5000)
-        # # 验证复选框勾选状态
-        # checkbox_label = quotation_page_obj.locator("label.el-checkbox").filter(
-        #     has_text=re.compile(r"审批通过后自动生成C4合同")
-        #     )
-        # is_checked = "is-checked" in (checkbox_label.get_attribute("class") or "")
-        # if is_checked:
-        #     logger.info("  → [验证] C4 合同复选框状态: 已勾选 ✓")
-        # else:
-        #     logger.error("  → [验证] C4 合同复选框状态: 未勾选 ✗")
-        # logger.info("  → C4 合同复选框已勾选 ✓")
+        checkbox_input = quotation_page_obj.locator("label.el-checkbox").filter(
+            has_text=re.compile(r"审批通过后自动生成C4合同")
+        ).locator("input.el-checkbox__original")
+        expect(checkbox_input).to_be_checked(timeout=10000)
+        is_checked = checkbox_input.is_checked()
+        assert is_checked, "C4 合同复选框未勾选!"
+        logger.info("  → C4 合同复选框已勾选 ✓")
 
         # ====== 上传附件 ======
         logger.info("  → 上传附件 ---")
@@ -267,12 +265,11 @@ class TestSalesOrder:
         else:
             search_input.press("Enter")
             logger.info("  → 回车触发搜索 ✓")
-        quotation_page_obj.wait_for_timeout(1500)
+        row_selector = f".el-table__row:has(td:has-text('{ADD_PRODUCT_CODE}'))"
+        quotation_page_obj.locator(row_selector).first.wait_for(state="visible", timeout=10000)
 
         logger.info("  → 勾选产品并确认 ---")
-        row = quotation_page_obj.locator(
-            f".el-table__row:has(td:has-text('{ADD_PRODUCT_CODE}'))"
-        ).first
+        row = quotation_page_obj.locator(row_selector).first
         checkbox_inner = row.locator(".el-checkbox__inner").first
         checkbox_inner.scroll_into_view_if_needed()
         quotation_page_obj.wait_for_timeout(300)
@@ -281,14 +278,14 @@ class TestSalesOrder:
         confirm_btn = quotation_page_obj.get_by_text("确认", exact=True).last
         confirm_btn.scroll_into_view_if_needed()
         confirm_btn.click(force=True)
-        logger.info("  → 确认按钮已点击，等待 3s ...")
-        quotation_page_obj.wait_for_timeout(3000)
+        logger.info("  → 确认按钮已点击")
+        quotation_page_obj.wait_for_timeout(500)
 
         logger.info("  → 关闭添加产品弹框")
-        close_btn = quotation_page_obj.locator("i.el-icon-close.close").first
+        close_btn = dialog.locator("i.el-icon-close.close").first
         close_btn.scroll_into_view_if_needed()
         close_btn.click(force=True)
-        quotation_page_obj.wait_for_timeout(500)
+        dialog.wait_for(state="hidden", timeout=10000)
         logger.info("  → 弹框已关闭 ✓")
         logger.info("  → 产品添加确认完成 ✓")
 

@@ -35,7 +35,7 @@ def test_customer_all_products_order(page):
     page.get_by_text("全部产品").first.click()
     page.get_by_role("tab", name="new营销专区12").click()
     page.evaluate("window.scrollTo(0, document.body.scrollHeight / 2)")
-    page.wait_for_timeout(2000)
+    page.get_by_label("new营销专区12").get_by_role("img").nth(1).wait_for(state="visible", timeout=10000)
 
     with page.expect_popup() as page1_info:
         page.get_by_label("new营销专区12").get_by_role("img").nth(1).click()

@@ -60,6 +60,7 @@ class CartPage(BasePage):
     def select_first_product(self) -> "CartPage":
         """勾选购物车中第一个商品复选框"""
         logger.info("勾选第一个商品复选框")
+        self.locate(".el-checkbox__inner").first.wait_for(state="visible", timeout=10000)
         self.click_first(
             ".el-checkbox__inner",
             ".el-checkbox",
@@ -170,13 +171,12 @@ class SalesCartPage(CartPage):
         logger.info("点击「继续下单」")
         self.click_any(*self.CONTINUE_ORDER_ALT)
         self.wait_for_network_idle()
-        self.page.wait_for_timeout(3000)
+        self.page.get_by_placeholder("请选择").first.wait_for(state="visible", timeout=10000)
         return self
 
     def select_opportunity(self, opportunity_name: str) -> "SalesCartPage":
         """选择商机并确认信息填写弹窗"""
         logger.info(f"选择商机: {opportunity_name}")
-        self.page.wait_for_timeout(2000)
 
         # 打开下拉框（链末尾 .first 避开 strict mode 多元素匹配）
         select = (
@@ -187,7 +187,7 @@ class SalesCartPage(CartPage):
         )
         select.wait_for(state="visible", timeout=5000)
         select.click()
-        self.page.wait_for_timeout(1000)
+        self.page.locator(".el-select-dropdown__item:visible").first.wait_for(state="visible", timeout=5000)
 
         # 在下拉选项中查找商机
         item = (
@@ -197,7 +197,7 @@ class SalesCartPage(CartPage):
         )
         item.wait_for(state="visible", timeout=5000)
         item.click()
-        self.page.wait_for_timeout(1000)
+        self.page.wait_for_timeout(300)
 
         logger.info(f"商机已选择: {opportunity_name}")
         return self.confirm_info_form()
@@ -207,7 +207,7 @@ class SalesCartPage(CartPage):
         logger.info("点击信息填写确认按钮")
         self.page.get_by_label("信息填写").get_by_text("确 定").click()
         logger.info("信息填写弹窗已确认")
-        self.page.wait_for_timeout(3000)
+        self.page.get_by_label("信息填写").wait_for(state="hidden", timeout=10000)
         return self
 
     def click_view_quotation(self) -> "Page":

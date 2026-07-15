@@ -47,7 +47,7 @@ class EnterpriseZonePage(BasePage):
         logger.info("从首页打开企业专区")
         # 第一步：滑动到页面 1/2 处
         home_page.evaluate("window.scrollTo(0, document.body.scrollHeight / 2)")
-        home_page.wait_for_timeout(2000)
+        home_page.get_by_text("企业专区").first.wait_for(state="visible", timeout=10000)
         # 第二步：点击"企业专区"打开 popup
         with home_page.expect_popup(timeout=8000) as page_info:
             home_page.get_by_text("企业专区").first.click()

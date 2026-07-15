@@ -1,0 +1,29 @@
+2026-07-15 10:14:06 | INFO     | æ—¥å¿—æ–‡ä»¶: F:\UI_AUTO\reports\logs\06-14-10_15-07-2026.log
+============================= test session starts =============================
+platform win32 -- Python 3.10.11, pytest-7.4.0, pluggy-1.6.0 -- C:\Users\wangt-aw\AppData\Local\Programs\Python\Python310\python.exe
+cachedir: .pytest_cache
+rootdir: f:\UI_AUTO
+configfile: pytest.ini
+plugins: allure-pytest-2.13.2, anyio-4.12.1, Faker-40.11.0, base-url-2.0.0, forked-1.6.0, ordering-0.6, playwright-0.4.0, rerunfailures-12.0, xdist-3.3.0
+collecting ... collected 1 item
+
+tests/test_customer_enterprise.py::test_customer_enterprise_order[chromium] 2026-07-15 10:14:07 | INFO     | ============================================================
+
+------------------------------- live log setup --------------------------------
+2026-07-15 10:14:07 [INFO] UI.conftest: ============================================================
+2026-07-15 10:14:07 | INFO     | æµ‹è¯•ç¯å¢ƒ: test
+2026-07-15 10:14:07 [INFO] UI.conftest: ²âÊÔ»·¾³: test
+2026-07-15 10:14:07 | INFO     | åŸºç¡€URL: https://zjtest.gyuncai.com
+2026-07-15 10:14:07 [INFO] UI.conftest: »ù´¡URL: https://zjtest.gyuncai.com
+2026-07-15 10:14:07 | INFO     | æµè§ˆå™¨: chrome (headless=False)
+2026-07-15 10:14:07 [INFO] UI.conftest: ä¯ÀÀÆ÷: chrome (headless=False)
+2026-07-15 10:14:07 | INFO     | è§†å£: 1920x1080
+2026-07-15 10:14:07 [INFO] UI.conftest: ÊÓ¿Ú: 1920x1080
+2026-07-15 10:14:07 | INFO     | è¶…æ—¶: 10000ms | é‡è¯•: 2æ¬¡
+2026-07-15 10:14:07 [INFO] UI.conftest: ³¬Ê±: 10000ms | ÖØÊÔ: 2´Î
+2026-07-15 10:14:07 | INFO     | ============================================================
+2026-07-15 10:14:07 [INFO] UI.conftest: ============================================================
+[INFO] Ê¹ÓÃ Chrome ä¯ÀÀÆ÷: C:\Program Files\Google\Chrome\Application\chrome.exe
+2026-07-15 10:14:11 | INFO     | ä»é¦–é¡µæ‰“å¼€ä¼ä¸šä¸“åŒº
+-------------------------------- live log call --------------------------------
+2026-07-15 10:14:11 [INFO] UI.pages.enterprise_zone_page: ´ÓÊ×Ò³´ò¿ªÆóÒµ×¨Çø

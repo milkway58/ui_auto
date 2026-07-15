@@ -78,15 +78,14 @@ class OrderConfirmPage(BasePage):
         """
         logger.info("提交订单：截图 → 等待 → 提交")
         self.screenshot(self.SCREENSHOT_SUBMIT)
-        self.page.wait_for_timeout(2000)
+        self.page.wait_for_timeout(500)
 
         # 第一步：p标签触发确认
         self.page.locator("p").filter(has_text="提交订单").click()
-        self.page.wait_for_timeout(1000)
+        self.page.get_by_role("button", name="提交订单", exact=True).wait_for(state="visible", timeout=10000)
 
         # 第二步：button确认提交
         self.page.get_by_role("button", name="提交订单", exact=True).click()
-        self.page.wait_for_timeout(3000)
 
         # 断言成功
         expect(self.page.get_by_text("生成订单成功")).to_be_visible()
@@ -169,6 +168,6 @@ class OrderConfirmPage(BasePage):
         except Exception:
             # 回退页面内模态框
             self.page.get_by_role("button", name="查看订单").click()
-            self.page.wait_for_timeout(2000)
+            self.page.locator(".el-dialog__wrapper:visible").wait_for(state="visible", timeout=10000)
             logger.info("查看订单（模态框模式）")
             return None

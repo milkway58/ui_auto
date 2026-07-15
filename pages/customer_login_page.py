@@ -183,9 +183,10 @@ class CustomerLoginPage(BasePage):
         self.click_any(*self.LOGIN_BUTTON_ALT, timeout=3000)
         logger.info("[OK] 已点击立即登录按钮")
 
-        logger.info("登录请求已提交，等待页面响应...")
-        self.page.wait_for_timeout(2000)
-        logger.info("已等待 2s，准备处理弹窗")
+        logger.info("登录请求已提交，等待页面跳转...")
+        self.page.wait_for_load_state("networkidle", timeout=10000)
+        self.wait_for_visible("text=您好", timeout=5000)
+        logger.info("首页标识元素已可见，准备处理弹窗")
 
         # 6. 关闭首次弹窗（根据 YAML 第42-45行）
         try:

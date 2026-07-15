@@ -99,7 +99,7 @@ class QuotationPage(BasePage):
         with self.page.expect_file_chooser() as fc_info:
             upload_btn.click()
         fc_info.value.set_files(file_path)
-        self.page.wait_for_timeout(1000)
+        self.page.wait_for_timeout(300)
         logger.info("附件上传完成")
         return self
 
@@ -115,7 +115,7 @@ class QuotationPage(BasePage):
         """
         logger.info("点击「提交报价单」")
         self.click_any(*self.SUBMIT_QUOTATION_ALT)
-        self.page.wait_for_timeout(1000)
+        self.page.wait_for_timeout(300)
         return self
 
     # ==========================================
@@ -175,7 +175,7 @@ class QuotationPage(BasePage):
         btn.evaluate("el => el.click()")
         logger.info("确认按钮已点击（方案C: JS click）")
 
-        self.page.wait_for_timeout(1000)
+        dialog.wait_for(state="hidden", timeout=10000)
         return self
 
     def _assert_dialog_ready(self, dialog, context: str = "") -> None:
@@ -242,7 +242,6 @@ class QuotationPage(BasePage):
             self（支持链式调用）
         """
         logger.info("点击添加商品按钮")
-        self.page.wait_for_timeout(1000)
         # 点击第二个添加按钮（录制中使用 nth=1）
         for selector in self.ADD_PRODUCT_BTN_ALT:
             try:
@@ -266,7 +265,7 @@ class QuotationPage(BasePage):
         """
         logger.info("点击「确认提交」")
         self.click_any(*self.CONFIRM_SUBMIT_ALT)
-        self.page.wait_for_timeout(1000)
+        self.page.wait_for_timeout(300)
         return self
 
     # ==========================================
